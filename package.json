@@ -1,0 +1,34 @@
+{
+  "name": "notifications-api-for-serviceworker",
+  "version": "1.0.0",
+  "description": "Just notifications-api-for-serviceWorker",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/captainprox02/notifications-api-for-serviceWorker.git"
+  },
+  "keywords": [
+    "notification",
+    "api",
+    "serviceWorker"
+  ],
+  "author": "Prox",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/captainprox02/notifications-api-for-serviceWorker/issues"
+  },
+  "homepage": "https://github.com/captainprox02/notifications-api-for-serviceWorker#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongoose": "^7.0.4",
+    "socket.io": "^4.6.1",
+    "socket.io-client": "^4.6.1",
+    "web-push": "^3.5.0"
+  }
+}
