@@ -52,29 +52,38 @@ const notificationSchema = new mongoose.Schema({
 
 const Notification = mongoose.model('Notification', notificationSchema);
 
+io.on('connection', (socket) => {
+    console.log('a user connected');
+});
+
 app.post('/api/subscribe', (req, res) => {
     console.log("body", req.body.subscription);
     const { endpoint, keys } = req.body.subscription;
 
     const newSubscribe = new Subscribe({
         endpoint,
-        expirationTime : null,
+        expirationTime: null,
         keys: {
             p256dh: keys.p256dh,
             auth: keys.auth
         }
     });
 
-    newSubscribe.save().then(() => {
-        res.status(200).json({ message: 'Subscribe successfully' });
-    }).catch(err => {
-        res.status(500).json({ message: 'Subscribe failure' });
-    });
+    if (Subscribe.findOne({ endpoint: endpoint })) {
+        res.status(200).json({ message: 'User has been subscribed!' });
+    } else {
+
+        newSubscribe.save().then(() => {
+            res.status(200).json({ message: 'Subscribe successfully' });
+        }).catch(err => {
+            res.status(500).json({ message: 'Subscribe failure' });
+        });
+    }
 });
 
-app.post('/api/notification', (req, res) => {
+app.post('/api/send-notification', (req, res) => {
     const { title, content, time } = req.body;
-  
+
     // Lưu thông tin vào cơ sở dữ liệu
     const newNotification = new Notification({
         title,
@@ -87,12 +96,40 @@ app.post('/api/notification', (req, res) => {
     }).catch(err => {
         res.status(500).json({ message: 'Notification sent failure' });
     });
-  
+
     // Gửi thông báo tới các clients khác
-    io.emit('new-notification', { title, content, time });
-  
+    const currentTime = new Date().getTime();
+    const timeSend = new Date(time).getTime();
+    let delay = timeSend - currentTime;
+
+    console.log(delay);
+
+    setTimeout(() => {
+        Subscribe.find().then(subscribes => {
+            subscribes.forEach(subscribe => {
+                const pushSubscription = {
+                    endpoint: subscribe.endpoint,
+                    expirationTime: subscribe.expirationTime,
+                    keys: {
+                        p256dh: subscribe.keys.p256dh,
+                        auth: subscribe.keys.auth
+                    }
+                };
+
+                const payload = JSON.stringify({
+                    title,
+                    content,
+                    time
+                });
+
+                webpush.sendNotification(pushSubscription, payload).catch(err => {
+                    console.log(err);
+                });
+            });
+        });
+    }, delay);
     res.status(200).json({ message: 'Notification sent successfully' });
-  });
+});
 
 app.listen(3000, function () {
     console.log('Example app listening on port 3000!');
