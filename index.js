@@ -83,6 +83,7 @@ app.post('/api/subscribe', (req, res) => {
 
 app.post('/api/send-notification', (req, res) => {
     const { title, content, time } = req.body;
+    console.log(req.body);
 
     // Lưu thông tin vào cơ sở dữ liệu
     const newNotification = new Notification({
@@ -94,12 +95,15 @@ app.post('/api/send-notification', (req, res) => {
     newNotification.save().then(() => {
         res.status(200).json({ message: 'Notification sent successfully' });
     }).catch(err => {
-        res.status(500).json({ message: 'Notification sent failure' });
+        // res.status(500).json({ message: 'Notification sent failure' });
+        console.log(err)
+        return;
     });
 
     // Gửi thông báo tới các clients khác
-    const currentTime = new Date().getTime();
-    const timeSend = new Date(time).getTime();
+    let currentTime = new Date().getTime();
+    let timeSend = new Date('4/25/2023 22:05:00').getTime();
+    console.log("Time: " ,currentTime, timeSend);
     let delay = timeSend - currentTime;
 
     console.log(delay);
@@ -117,10 +121,11 @@ app.post('/api/send-notification', (req, res) => {
                 };
 
                 const payload = JSON.stringify({
-                    title,
-                    content,
-                    time
+                    title: content,
+                    message: content
                 });
+
+                console.log(payload);
 
                 webpush.sendNotification(pushSubscription, payload).catch(err => {
                     console.log(err);
@@ -128,7 +133,7 @@ app.post('/api/send-notification', (req, res) => {
             });
         });
     }, delay);
-    res.status(200).json({ message: 'Notification sent successfully' });
+    // res.status(200).json({ message: 'Notification sent successfully' });
 });
 
 app.listen(3000, function () {
