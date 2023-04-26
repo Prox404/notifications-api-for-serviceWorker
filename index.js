@@ -95,14 +95,14 @@ app.post('/api/send-notification', (req, res) => {
     newNotification.save().then(() => {
         res.status(200).json({ message: 'Notification sent successfully' });
     }).catch(err => {
-        // res.status(500).json({ message: 'Notification sent failure' });
-        console.log(err)
+        res.status(500).json({ message: 'Notification sent failure' });
+        // console.log(err)
         return;
     });
 
     // Gửi thông báo tới các clients khác
     let currentTime = new Date().getTime();
-    let timeSend = new Date('4/25/2023 22:05:00').getTime();
+    let timeSend = new Date(time).getTime();
     console.log("Time: " ,currentTime, timeSend);
     let delay = timeSend - currentTime;
 
@@ -133,7 +133,6 @@ app.post('/api/send-notification', (req, res) => {
             });
         });
     }, delay);
-    // res.status(200).json({ message: 'Notification sent successfully' });
 });
 
 app.listen(3000, function () {
