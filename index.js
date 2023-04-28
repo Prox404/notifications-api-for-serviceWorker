@@ -15,7 +15,7 @@ const corsOptions = {
     origin: "*",
     credentials: true, // Access-control-allow-credentials:true
     optionSuccessStatus: 200,
-  };
+};
 
 app.use(cors(corsOptions));
 
@@ -107,17 +107,17 @@ app.post('/api/send-notification', (req, res) => {
     //     // console.log(err)
     //     return;
     // });
-    try{
+    try {
 
-    // Gửi thông báo tới các clients khác
-    let currentTime = new Date().getTime();
-    let timeSend = new Date(time).getTime();
-    console.log("Time: " ,currentTime, timeSend);
-    let delay = timeSend - currentTime;
+        // Gửi thông báo tới các clients khác
+        let currentTime = new Date().getTime();
+        let timeSend = new Date(time).getTime();
+        console.log("Time: ", currentTime, timeSend);
+        let delay = timeSend - currentTime;
 
-    console.log(delay);
+        console.log(delay);
 
-    setTimeout(() => {
+
         Subscribe.find().then(subscribes => {
             subscribes.forEach(subscribe => {
                 const pushSubscription = {
@@ -135,19 +135,22 @@ app.post('/api/send-notification', (req, res) => {
                     delay: delay > 0 ? delay : 0
                 });
 
-                console.log('payload: ',payload);
+                console.log('payload: ', payload);
 
                 webpush.sendNotification(pushSubscription, payload).catch(err => {
                     console.log(err);
                 });
             });
+        }).catch(err => {
+            console.log(err);
         });
-    }, 0);
-        res.status(200).json({ message: 'Notification sent successfully' });
-    }catch{
+        setTimeout(() => {
+            res.status(200).json({ message: 'Notification sent successfully' })
+        }, 500);
+    } catch {
         res.status(500).json({ message: 'Notification sent failure' });
     }
-    
+
 
 });
 
