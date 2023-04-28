@@ -11,7 +11,13 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 db.connect();
 
-app.use(cors());
+const corsOptions = {
+    origin: "*",
+    credentials: true, // Access-control-allow-credentials:true
+    optionSuccessStatus: 200,
+  };
+
+app.use(cors(corsOptions));
 
 app.get('/', function (req, res) {
     res.send('Hello World!');
