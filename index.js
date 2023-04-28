@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+// const server = require('http').createServer(app);
+// const io = require('socket.io')(server);
 const cors = require('cors');
 const db = require('./config/db');
 const webpush = require('web-push');
@@ -58,9 +58,9 @@ const Subscribe = mongoose.model('Subscribe', subscribeSchema);
 
 // const Notification = mongoose.model('Notification', notificationSchema);
 
-io.on('connection', (socket) => {
-    console.log('a user connected');
-});
+// io.on('connection', (socket) => {
+//     console.log('a user connected');
+// });
 
 app.post('/api/subscribe', (req, res) => {
     console.log("body", req.body.subscription);
@@ -130,17 +130,19 @@ app.post('/api/send-notification', (req, res) => {
                 };
 
                 const payload = JSON.stringify({
-                    message: title + '\n\n'+ content
+                    title: title,
+                    message: content,
+                    delay: delay > 0 ? delay : 0
                 });
 
-                console.log(payload);
+                console.log('payload: ',payload);
 
                 webpush.sendNotification(pushSubscription, payload).catch(err => {
                     console.log(err);
                 });
             });
         });
-    }, delay);
+    }, 0);
         res.status(200).json({ message: 'Notification sent successfully' });
     }catch{
         res.status(500).json({ message: 'Notification sent failure' });
