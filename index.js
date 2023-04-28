@@ -50,13 +50,13 @@ const subscribeSchema = new mongoose.Schema({
 
 const Subscribe = mongoose.model('Subscribe', subscribeSchema);
 
-const notificationSchema = new mongoose.Schema({
-    title: String,
-    content: String,
-    time: Date
-});
+// const notificationSchema = new mongoose.Schema({
+//     title: String,
+//     content: String,
+//     time: Date
+// });
 
-const Notification = mongoose.model('Notification', notificationSchema);
+// const Notification = mongoose.model('Notification', notificationSchema);
 
 io.on('connection', (socket) => {
     console.log('a user connected');
@@ -92,19 +92,20 @@ app.post('/api/send-notification', (req, res) => {
     console.log(req.body);
 
     // Lưu thông tin vào cơ sở dữ liệu
-    const newNotification = new Notification({
-        title,
-        content,
-        time
-    });
+    // const newNotification = new Notification({
+    //     title,
+    //     content,
+    //     time
+    // });
 
-    newNotification.save().then(() => {
-        res.status(200).json({ message: 'Notification sent successfully' });
-    }).catch(err => {
-        res.status(500).json({ message: 'Notification sent failure' });
-        // console.log(err)
-        return;
-    });
+    // newNotification.save().then(() => {
+    //     res.status(200).json({ message: 'Notification sent successfully' });
+    // }).catch(err => {
+    //     res.status(500).json({ message: 'Notification sent failure' });
+    //     // console.log(err)
+    //     return;
+    // });
+    try{
 
     // Gửi thông báo tới các clients khác
     let currentTime = new Date().getTime();
@@ -127,8 +128,7 @@ app.post('/api/send-notification', (req, res) => {
                 };
 
                 const payload = JSON.stringify({
-                    title: content,
-                    message: content
+                    message: title + '\n\n'+ content
                 });
 
                 console.log(payload);
@@ -139,6 +139,12 @@ app.post('/api/send-notification', (req, res) => {
             });
         });
     }, delay);
+        res.status(200).json({ message: 'Notification sent successfully' });
+    }catch{
+        res.status(500).json({ message: 'Notification sent failure' });
+    }
+    
+
 });
 
 app.listen(3000, function () {
