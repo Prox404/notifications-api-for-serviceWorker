@@ -65,10 +65,10 @@ const Subscribe = mongoose.model('Subscribe', subscribeSchema);
 //     console.log('a user connected');
 // });
 
-app.post('/api/subscribe', (req, res) => {
+app.post('/api/subscribe', async (req, res) => {
     console.log("body", req.body.subscription);
     const { endpoint, keys } = req.body.subscription;
-
+    console.log("endpoint, key: ", endpoint+ '\n' + JSON.stringify(keys));
     const newSubscribe = new Subscribe({
         endpoint,
         expirationTime: null,
@@ -78,11 +78,13 @@ app.post('/api/subscribe', (req, res) => {
         }
     });
 
-    if (Subscribe.findOne({ endpoint: endpoint })) {
+    let subcribe = await Subscribe.findOne({ endpoint: endpoint });
+    console.log('subcribe: ', subcribe);
+    if (subcribe) {
         res.status(200).json({ message: 'User has been subscribed!' });
     } else {
 
-        newSubscribe.save().catch(err => {
+        await newSubscribe.save().catch(err => {
             res.status(500).json({ message: 'Subscribe failure' });
             return;
         });
@@ -92,7 +94,7 @@ app.post('/api/subscribe', (req, res) => {
     }
 });
 
-app.post('/api/send-notification', (req, res) => {
+app.post('/api/send-notification', async (req, res) => {
     const { title, content, time } = req.body;
     console.log(req.body);
 
@@ -121,7 +123,7 @@ app.post('/api/send-notification', (req, res) => {
         console.log(delay);
 
 
-        Subscribe.find().then(subscribes => {
+        await Subscribe.find().then(subscribes => {
             if (!subscribes) {
                 res.status(500).json({ message: 'No subscribers found' })
                 return;
@@ -145,11 +147,13 @@ app.post('/api/send-notification', (req, res) => {
                 console.log('payload: ', payload);
 
                 webpush.sendNotification(pushSubscription, payload).catch(err => {
-                    console.log(err);
+                    res.status(500).json({ message: 'Notification sent failure' });
+                    return;
                 });
             });
         }).catch(err => {
-            console.log(err);
+            res.status(500).json({ message: 'Notification sent failure' });
+            return;
         });
         setTimeout(() => {
             res.status(200).json({ message: 'Notification sent successfully' })
