@@ -5,9 +5,12 @@ const db = require('./config/db');
 const webpush = require('web-push');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 app.use(bodyParser.json());
-db.connect();
+
 
 const corsOptions = {
     origin: "*",
@@ -16,6 +19,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+db.connect();
 
 app.get('/', function (req, res) {
     res.send('Hello World!');
