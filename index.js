@@ -33,7 +33,7 @@ let VAPIDKeys = {
 }
 
 webpush.setVapidDetails(
-    'http://192.168.1.2:5500/',
+    'http://192.168.1.6:5500/',
     VAPIDKeys.publicKey,
     VAPIDKeys.privateKey
 );
@@ -119,6 +119,10 @@ app.post('/api/send-notification', (req, res) => {
 
 
         Subscribe.find().then(subscribes => {
+            if (!subscribes) {
+                res.status(500).json({ message: 'No subscribers found' })
+                return;
+            }
             subscribes.forEach(subscribe => {
                 const pushSubscription = {
                     endpoint: subscribe.endpoint,
