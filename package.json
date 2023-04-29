@@ -27,7 +27,6 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "mongoose": "^7.0.4",
-    "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",
     "web-push": "^3.5.0"
   }
